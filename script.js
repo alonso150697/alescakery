@@ -1,120 +1,126 @@
-// Número de WhatsApp de Ales Cakery (Reemplaza con tu número real de Perú con código 51)
+// Configuración de conexión con Google Sheets y WhatsApp
+const SHEET_URL = "https://opensheet.elk.sh/19QBT3RhdLP-EtrG3tLg0a-uE-EeQfCLmwJJWZgcD3IM/Hoja1";
 const TELEFONO_WHATSAPP = "51986730375";
 
-// Base de datos de productos para el catálogo
-const productosDB = {
-  "torta-personalizada-1": {
-    titulo: "Torta Personalizada Temática",
-    categoria: "Tortas Personalizadas",
-    precio: "Desde S/ 120.00",
-    imagen: "torta1.jpg",
-    descripcion: "Diseñamos la torta de tus sueños para cumpleaños, aniversarios o eventos especiales. Elaboración 100% artesanal con masa elástica, buttercream o whipped cream.",
-    porciones: "12 a 15 personas"
-  },
-  "cheesecake-frutos-rojos": {
-    titulo: "Cheesecake de Frutos Rojos",
-    categoria: "Cheesecakes",
-    precio: "S/ 85.00",
-    imagen: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=800&auto=format&fit=crop",
-    descripcion: "Base crujiente de galleta de vainilla, crema suave de queso crema y mermelada artesanal de frutos rojos seleccionados.",
-    porciones: "8 a 10 personas"
-  },
-  "tartaleta-fresa": {
-    titulo: "Tartaleta Artesanal de Fresa",
-    categoria: "Tartaletas",
-    precio: "S/ 70.00",
-    imagen: "https://images.unsplash.com/photo-1519869325930-281384150729?w=800&auto=format&fit=crop",
-    descripcion: "Masa sablé de mantequilla rellena de suave crema pastelera artesanal y fresas frescas glacadas.",
-    porciones: "8 personas"
-  },
-  "box-bocaditos-dulces": {
-    titulo: "Box Mini Alfajores (25 und)",
-    categoria: "Bocaditos Dulces",
-    precio: "S/ 45.00",
-    imagen: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800&auto=format&fit=crop",
-    descripcion: "Deliciosos mini alfajores de maicena deshaciéndose en la boca, rellenados con abundante manjar blanco casero.",
-    porciones: "Caja de 25 unidades"
-  },
-  "torta-chocolate": {
-    titulo: "Torta Fudge Chocolate",
-    categoria: "Postres Enteros",
-    precio: "S/ 90.00",
-    imagen: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&auto=format&fit=crop",
-    descripcion: "Bizcocho húmedo de cacao con triple capa de fudge de chocolate artesanal.",
-    porciones: "10 a 12 personas"
-  },
-  "box-bocaditos-salados": {
-    titulo: "Mini Enrrollados de Jamón y Queso (30 und)",
-    categoria: "Bocaditos Salados",
-    precio: "S/ 55.00",
-    imagen: "https://images.unsplash.com/photo-1541529086526-db283c563270?w=800&auto=format&fit=crop",
-    descripcion: "Masa hojaldrada horneada rellena con jamón de pierna y queso derretido.",
-    porciones: "Caja de 30 unidades"
+let productosGlobales = [];
+
+// 1. Cargar el catálogo en index.html desde Google Sheets
+async function obtenerProductosDesdeSheets() {
+  const grid = document.getElementById('productGrid');
+  if (!grid) return;
+
+  try {
+    const respuesta = await fetch(SHEET_URL);
+    productosGlobales = await respuesta.json();
+    renderizarProductos(productosGlobales);
+    configurarBuscadorYFiltros();
+  } catch (error) {
+    console.error("Error al cargar productos desde Google Sheets:", error);
   }
-};
-
-let categoriaActual = 'todos';
-
-// Filtro por botones de categorías
-function filtrarCategoria(categoria, btnElement) {
-  categoriaActual = categoria;
-
-  const buttons = document.querySelectorAll('.tab-btn');
-  buttons.forEach(btn => btn.classList.remove('active'));
-  
-  if (btnElement) {
-    btnElement.classList.add('active');
-  }
-
-  filtrarProductos();
 }
 
-// Lógica unificada para filtrar por texto y por categoría a la vez
-function filtrarProductos() {
-  const input = document.getElementById('searchInput');
-  const textoBusqueda = input ? input.value.toLowerCase().trim() : '';
-  const cards = document.querySelectorAll('.product-card');
+// 2. Dibujar las tarjetas de productos en pantalla
+function renderizarProductos(productos) {
+  const grid = document.getElementById('productGrid');
+  if (!grid) return;
 
-  cards.forEach(card => {
-    const titulo = card.querySelector('h3').textContent.toLowerCase();
-    const categoriaCard = card.dataset.category;
+  grid.innerHTML = "";
 
-    const coincideCategoria = (categoriaActual === 'todos' || categoriaCard === categoriaActual);
-    const coincideTexto = titulo.includes(textoBusqueda);
+  if (productos.length === 0) {
+    grid.innerHTML = `<p class="no-results">No se encontraron productos.</p>`;
+    return;
+  }
 
-    if (coincideCategoria && coincideTexto) {
-      card.style.display = 'block';
-    } else {
-      card.style.display = 'none';
-    }
+  productos.forEach(prod => {
+    const cardHTML = `
+      <a href="producto.html?id=${prod.id}" class="product-card" data-category="${prod.categoria}">
+        <div class="card-img">
+          <img src="${prod.imagen}" alt="${prod.titulo}" loading="lazy">
+        </div>
+        <div class="card-info">
+          <h3>${prod.titulo}</h3>
+          <p class="category-name">${prod.categoria}</p>
+          <p class="price-indicator">${prod.precio}</p>
+        </div>
+      </a>
+    `;
+    grid.innerHTML += cardHTML;
   });
 }
 
-// Carga los datos dinámicos en la página producto.html
-function cargarDetalleProducto() {
-  const params = new URLSearchParams(window.location.search);
-  const idProducto = params.get('id');
+// 3. Filtros por categoría y buscador en tiempo real
+function configurarBuscadorYFiltros() {
+  const searchInput = document.getElementById('searchInput');
+  const filterBtns = document.querySelectorAll('.filter-btn');
 
-  const producto = productosDB[idProducto] || productosDB["torta-personalizada-1"];
+  let categoriaActual = 'todos';
 
-  const elTitle = document.getElementById('detailTitle');
-  const elCategory = document.getElementById('detailCategory');
-  const elPrice = document.getElementById('detailPrice');
-  const elImg = document.getElementById('detailImg');
-  const elDesc = document.getElementById('detailDescription');
-  const elServings = document.getElementById('detailServings');
-  const elWspBtn = document.getElementById('btnWhatsappCTA');
+  function filtrar() {
+    const textoBusqueda = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-  if (elTitle) elTitle.textContent = producto.titulo;
-  if (elCategory) elCategory.textContent = producto.categoria;
-  if (elPrice) elPrice.textContent = producto.precio;
-  if (elImg) elImg.src = producto.imagen;
-  if (elDesc) elDesc.textContent = producto.descripcion;
-  if (elServings) elServings.textContent = producto.porciones;
+    const filtrados = productosGlobales.filter(prod => {
+      const catNormalizada = prod.categoria ? prod.categoria.toLowerCase().replace(/\s+/g, '-') : '';
+      const coincideCategoria = categoriaActual === 'todos' || catNormalizada === categoriaActual;
+      
+      const coincideTexto = (prod.titulo && prod.titulo.toLowerCase().includes(textoBusqueda)) || 
+                            (prod.categoria && prod.categoria.toLowerCase().includes(textoBusqueda));
 
-  // Generación de mensaje automático a WhatsApp
-  const mensaje = `Hola quiero cotizar este producto: ${producto.titulo}`;
-  const linkWhatsApp = `https://wa.me/${TELEFONO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
+      return coincideCategoria && coincideTexto;
+    });
 
-  if (elWspBtn) elWspBtn.href = linkWhatsApp;
+    renderizarProductos(filtrados);
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', filtrar);
+  }
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      categoriaActual = btn.getAttribute('data-category');
+      filtrar();
+    });
+  });
 }
+
+// 4. Cargar la vista detallada en producto.html
+async function cargarDetalleProducto() {
+  const detailTitle = document.getElementById('detailTitle');
+  if (!detailTitle) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const idBuscado = params.get('id');
+
+  try {
+    const respuesta = await fetch(SHEET_URL);
+    const productos = await respuesta.json();
+    const producto = productos.find(p => p.id === idBuscado) || productos[0];
+
+    if (!producto) return;
+
+    document.getElementById('detailTitle').textContent = producto.titulo;
+    document.getElementById('detailCategory').textContent = producto.categoria;
+    document.getElementById('detailPrice').textContent = producto.precio;
+    document.getElementById('detailImg').src = producto.imagen;
+    document.getElementById('detailImg').alt = producto.titulo;
+    document.getElementById('detailDescription').textContent = producto.descripcion;
+    document.getElementById('detailServings').textContent = producto.porciones;
+
+    // Mensaje directo para WhatsApp
+    const mensaje = `Hola quiero cotizar este producto: ${producto.titulo}`;
+    const linkWhatsApp = `https://wa.me/${TELEFONO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
+
+    document.getElementById('btnWhatsappCTA').href = linkWhatsApp;
+
+  } catch (error) {
+    console.error("Error al cargar el detalle del producto:", error);
+  }
+}
+
+// Inicializar al cargar la página
+document.addEventListener("DOMContentLoaded", () => {
+  obtenerProductosDesdeSheets();
+  cargarDetalleProducto();
+});
