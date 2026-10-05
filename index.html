@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Local -->
+  <title>Ales Cakery | Tortas Personalizadas y Postres a Pedido</title>
+  <meta name="description" content="Pastelería artesanal sobre pedido. Tortas personalizadas, cheesecakes, tartaletas y bocaditos en Lima. Pedidos con 48h de anticipación.">
+  
+  <link rel="stylesheet" href="style.css">
+  <!-- Fuentes de Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Barra Superior -->
+  <header class="top-nav">
+    <div class="logo-text">Ales Cakery</div>
+    <a href="https://wa.me/51999999999?text=Hola%20Ales%20Cakery,%20quisiera%20hacer%20una%20consulta" target="_blank" class="btn-wsp-header">
+      WhatsApp
+    </a>
+  </header>
+
+  <main class="container">
+    <!-- Perfil Estilo Instagram -->
+    <section class="profile-header">
+      <div class="profile-avatar">
+        <!-- Reemplaza con la ruta de tu imagen de logo -->
+        <img src="logo.jpg" alt="Ales Cakery Logo">
+      </div>
+      <div class="profile-info">
+        <h1 class="brand-name">Ales Cakery</h1>
+        <p class="handle">@ales.cakery</p>
+        <p class="bio">
+          ✨ Pastelería artesanal hecha a pedido<br>
+          🎂 Especialistas en <strong>Tortas Personalizadas</strong><br>
+          🕒 Pedidos con mínimo 48 horas de anticipación<br>
+          🛵 Delivery y recojo en taller
+        </p>
+      </div>
+    </section>
+
+    <!-- Buscador de Productos -->
+    <section class="search-section">
+      <input 
+        type="text" 
+        id="searchInput" 
+        class="search-input" 
+        placeholder="🔍 Buscar tortas, cheesecakes, bocaditos..." 
+        onkeyup="filtrarProductos()"
+      >
+    </section>
+
+    <!-- Filtros de Categorías (Tabs) -->
+    <section class="categories-tab">
+      <button class="tab-btn active" onclick="filtrarCategoria('todos', this)">Todos</button>
+      <button class="tab-btn estrella" onclick="filtrarCategoria('tortas-personalizadas', this)">⭐ Tortas Personalizadas</button>
+      <button class="tab-btn" onclick="filtrarCategoria('postres-enteros', this)">Tortas Enteras</button>
+      <button class="tab-btn" onclick="filtrarCategoria('cheesecakes', this)">Cheesecakes</button>
+      <button class="tab-btn" onclick="filtrarCategoria('tartaletas', this)">Tartaletas</button>
+      <button class="tab-btn" onclick="filtrarCategoria('bocaditos-dulces', this)">Bocaditos Dulces</button>
+      <button class="tab-btn" onclick="filtrarCategoria('bocaditos-salados', this)">Bocaditos Salados</button>
+    </section>
+
+    <!-- Grilla de Productos (Feed Instagram) -->
+    <section class="product-grid" id="productGrid">
+      
+      <!-- Producto 1 (Estrella) -->
+      <a href="producto.html?id=torta-personalizada-1" class="product-card" data-category="tortas-personalizadas">
+        <div class="card-img">
+          <img src="torta1.jpg" alt="Torta Personalizada Temática">
+    
+        </div>
+        <div class="card-info">
+          <h3>Torta Personalizada Temática</h3>
+          <p class="category-name">Tortas Personalizadas</p>
+          <p class="price-indicator">Desde S/ 120.00</p>
+        </div>
+      </a>
+
+      <!-- Producto 2 -->
+      <a href="producto.html?id=cheesecake-frutos-rojos" class="product-card" data-category="cheesecakes">
+        <div class="card-img">
+          <img src="https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=600&auto=format&fit=crop" alt="Cheesecake de Frutos Rojos">
+        </div>
+        <div class="card-info">
+          <h3>Cheesecake de Frutos Rojos</h3>
+          <p class="category-name">Cheesecakes</p>
+          <p class="price-indicator">S/ 85.00</p>
+        </div>
+      </a>
+
+      <!-- Producto 3 -->
+      <a href="producto.html?id=tartaleta-fresa" class="product-card" data-category="tartaletas">
+        <div class="card-img">
+          <img src="https://images.unsplash.com/photo-1519869325930-281384150729?w=600&auto=format&fit=crop" alt="Tartaleta de Fresa">
+        </div>
+        <div class="card-info">
+          <h3>Tartaleta Artesanal de Fresa</h3>
+          <p class="category-name">Tartaletas</p>
+          <p class="price-indicator">S/ 70.00</p>
+        </div>
+      </a>
+
+      <!-- Producto 4 -->
+      <a href="producto.html?id=box-bocaditos-dulces" class="product-card" data-category="bocaditos-dulces">
+        <div class="card-img">
+          <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600&auto=format&fit=crop" alt="Box de Bocaditos Dulces">
+        </div>
+        <div class="card-info">
+          <h3>Box Mini Alfajores (25 und)</h3>
+          <p class="category-name">Bocaditos Dulces</p>
+          <p class="price-indicator">S/ 45.00</p>
+        </div>
+      </a>
+
+      <!-- Producto 5 -->
+      <a href="producto.html?id=torta-chocolate" class="product-card" data-category="postres-enteros">
+        <div class="card-img">
+          <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop" alt="Torta Fudge Chocolate">
+        </div>
+        <div class="card-info">
+          <h3>Torta Fudge Chocolate</h3>
+          <p class="category-name">Postres Enteros</p>
+          <p class="price-indicator">S/ 90.00</p>
+        </div>
+      </a>
+
+      <!-- Producto 6 -->
+      <a href="producto.html?id=box-bocaditos-salados" class="product-card" data-category="bocaditos-salados">
+        <div class="card-img">
+          <img src="https://images.unsplash.com/photo-1541529086526-db283c563270?w=600&auto=format&fit=crop" alt="Bocaditos Salados">
+        </div>
+        <div class="card-info">
+          <h3>Mini Enrrollados de Jamón y Queso (30 und)</h3>
+          <p class="category-name">Bocaditos Salados</p>
+          <p class="price-indicator">S/ 55.00</p>
+        </div>
+      </a>
+
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

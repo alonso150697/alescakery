@@ -1,0 +1,365 @@
+/* ==========================================
+   VARIABLES Y PALETA DE BRANDBOARD ALES CAKERY
+   ========================================== */
+:root {
+  --color-pistacho: #B6BB79;    /* Verde principal del Logo */
+  --color-rosa-accent: #F297A0; /* Rosa resaltado */
+  --color-rosa-soft: #F9D0CE;   /* Rosa claro */
+  --color-crema: #F3EBD8;       /* Beige / Crema cálido */
+  --color-dark: #2B2B2B;
+  --color-white: #FFFFFF;
+  --color-gray-bg: #FAFAFA;
+  --color-gray-border: #EFEFEF;
+  --font-main: 'Plus Jakarta Sans', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--color-white);
+  color: var(--color-dark);
+  line-height: 1.5;
+}
+
+body.bg-light {
+  background-color: var(--color-gray-bg);
+}
+
+.container {
+  max-width: 935px;
+  margin: 0 auto;
+  padding: 15px;
+}
+
+/* Header Superior */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-gray-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo-text {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--color-pistacho);
+  letter-spacing: -0.5px;
+}
+
+.back-link {
+  text-decoration: none;
+  color: var(--color-dark);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.btn-wsp-header {
+  background-color: var(--color-pistacho);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Perfil Estilo Instagram */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  padding: 20px 0 20px 0;
+  border-bottom: 1px solid var(--color-gray-border);
+}
+
+.profile-avatar img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-rosa-soft);
+  padding: 2px;
+}
+
+.profile-info .brand-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-dark);
+}
+
+.profile-info .handle {
+  color: #8E8E8E;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.profile-info .bio {
+  font-size: 0.9rem;
+  color: #4A4A4A;
+}
+
+/* Buscador de Productos */
+.search-section {
+  margin: 15px 0 10px 0;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 20px;
+  border: 1.5px solid var(--color-gray-border);
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-family: var(--font-main);
+  background-color: var(--color-gray-bg);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  background-color: var(--color-white);
+  border-color: var(--color-pistacho);
+  box-shadow: 0 0 0 3px rgba(182, 187, 121, 0.2);
+}
+
+/* Categorías Tabs */
+.categories-tab {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 0 20px 0;
+  scrollbar-width: none;
+}
+
+.categories-tab::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-btn {
+  background-color: var(--color-crema);
+  border: 1px solid transparent;
+  color: var(--color-dark);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+  background-color: var(--color-pistacho);
+  color: white;
+}
+
+.tab-btn.estrella {
+  background-color: var(--color-rosa-soft);
+  color: var(--color-dark);
+  border: 1px solid var(--color-rosa-accent);
+}
+
+/* Grilla de Productos */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.product-card {
+  text-decoration: none;
+  color: inherit;
+  background-color: var(--color-white);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--color-gray-border);
+  transition: transform 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+}
+
+.card-img {
+  position: relative;
+  width: 100%;
+  padding-top: 100%;
+}
+
+.card-img img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.badge-star {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: var(--color-rosa-accent);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+
+.card-info {
+  padding: 12px;
+}
+
+.card-info h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.card-info .category-name {
+  font-size: 0.75rem;
+  color: #737373;
+}
+
+.card-info .price-indicator {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-pistacho);
+  margin-top: 6px;
+}
+
+/* Detalle de Producto */
+.detail-container {
+  margin-top: 20px;
+}
+
+.detail-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid var(--color-gray-border);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.detail-img-box img {
+  width: 100%;
+  height: 100%;
+  max-height: 500px;
+  object-fit: cover;
+}
+
+.detail-content {
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.badge-category {
+  background-color: var(--color-crema);
+  color: var(--color-dark);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  align-self: flex-start;
+  margin-bottom: 10px;
+}
+
+.detail-content h1 {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.detail-content .price {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-pistacho);
+  margin-bottom: 15px;
+}
+
+.notice-box {
+  background-color: var(--color-crema);
+  border-left: 4px solid var(--color-rosa-accent);
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+}
+
+.description-box h3 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.description-box p {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.specs-list {
+  list-style: none;
+  font-size: 0.85rem;
+  color: #444;
+  margin-bottom: 25px;
+}
+
+.specs-list li {
+  margin-bottom: 6px;
+}
+
+.btn-whatsapp-large {
+  background-color: #25D366;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 14px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: auto;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+  transition: background-color 0.2s;
+}
+
+.btn-whatsapp-large:hover {
+  background-color: #1EBE5D;
+}
+
+/* Responsivo para Móviles */
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .detail-card {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-header {
+    gap: 15px;
+  }
+  
+  .profile-avatar img {
+    width: 75px;
+    height: 75px;
+  }
+}
