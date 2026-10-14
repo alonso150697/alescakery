@@ -5,7 +5,7 @@ const TELEFONO_WHATSAPP = "51986730375";
 let productosGlobales = [];
 let categoriaActual = 'todos';
 
-// Normaliza textos (quita tildes, mayúsculas y convierte espacios a guiones)
+// Función para quitar tildes, espacios y minúsculas
 function normalizarTexto(texto) {
   if (!texto) return '';
   return texto
@@ -17,7 +17,7 @@ function normalizarTexto(texto) {
     .replace(/\s+/g, '-');
 }
 
-// 1. Cargar el catálogo desde Google Sheets
+// 1. Cargar catálogo principal desde Google Sheets
 async function obtenerProductosDesdeSheets() {
   const grid = document.getElementById('productGrid');
   if (!grid) return;
@@ -25,14 +25,40 @@ async function obtenerProductosDesdeSheets() {
   try {
     const respuesta = await fetch(SHEET_URL);
     productosGlobales = await respuesta.json();
+    
+    // Genera automáticamente los botones arriba según lo que hayas puesto en la columna categoria
+    generarBotonesCategorias();
     renderizarProductos(productosGlobales);
-    configurarBuscadorYFiltros();
+    configurarBuscador();
   } catch (error) {
     console.error("Error al cargar productos desde Google Sheets:", error);
   }
 }
 
-// 2. Dibujar las tarjetas de productos
+// 2. Generar Botones de Categoría Dinámicos
+function generarBotonesCategorias() {
+  const categoriesContainer = document.querySelector('.categories-tab');
+  if (!categoriesContainer) return;
+
+  // Extraer categorías únicas del Excel (ignorando campos vacíos)
+  const categoriasUnicas = [...new Set(productosGlobales.map(p => p.categoria).filter(Boolean))];
+
+  // Botón "Todos" por defecto
+  let botonesHTML = `<button class="tab-btn active" data-category="todos">Todos</button>`;
+
+  categoriasUnicas.forEach(cat => {
+    const catSlug = normalizarTexto(cat);
+    const esEstrella = catSlug === 'tortas-personalizadas' ? 'estrella' : '';
+    const icono = catSlug === 'tortas-personalizadas' ? '⭐ ' : '';
+
+    botonesHTML += `<button class="tab-btn ${esEstrella}" data-category="${catSlug}">${icono}${cat}</button>`;
+  });
+
+  categoriesContainer.innerHTML = botonesHTML;
+  configurarEventosBotones();
+}
+
+// 3. Renderizar Tarjetas de Productos
 function renderizarProductos(productos) {
   const grid = document.getElementById('productGrid');
   if (!grid) return;
@@ -61,18 +87,16 @@ function renderizarProductos(productos) {
   });
 }
 
-// 3. Función unificada de filtrado (Categoría + Buscador)
+// 4. Filtrar Productos por Búsqueda y Categoría
 function filtrarProductos() {
   const searchInput = document.getElementById('searchInput');
   const textoBusqueda = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
   const filtrados = productosGlobales.filter(prod => {
-    const catProdNormalizada = normalizarTexto(prod.categoria);
-    const catFiltroNormalizada = normalizarTexto(categoriaActual);
+    const catProdNorm = normalizarTexto(prod.categoria);
+    const catFiltroNorm = normalizarTexto(categoriaActual);
 
-    const coincideCategoria = catFiltroNormalizada === 'todos' || 
-                               catProdNormalizada === catFiltroNormalizada ||
-                               catProdNormalizada.includes(catFiltroNormalizada);
+    const coincideCategoria = catFiltroNorm === 'todos' || catProdNorm === catFiltroNorm;
     
     const tituloNorm = (prod.titulo || '').toLowerCase();
     const catNorm = (prod.categoria || '').toLowerCase();
@@ -84,45 +108,26 @@ function filtrarProductos() {
   renderizarProductos(filtrados);
 }
 
-// 4. Configurar eventos de los botones y del buscador
-function configurarBuscadorYFiltros() {
-  const searchInput = document.getElementById('searchInput');
-
-  if (searchInput) {
-    searchInput.addEventListener('input', filtrarProductos);
-  }
-
-  // Detecta cualquier tipo de botón de categoría (.filter-btn, .tab-btn o dentro del contenedor)
-  const botones = document.querySelectorAll('.filter-btn, .tab-btn, #categoryFilters button');
-
+function configurarEventosBotones() {
+  const botones = document.querySelectorAll('.tab-btn');
   botones.forEach(btn => {
     btn.addEventListener('click', function() {
       botones.forEach(b => b.classList.remove('active'));
       this.classList.add('active');
-
-      let cat = this.getAttribute('data-category');
-      if (!cat) {
-        cat = this.textContent.trim();
-      }
-
-      categoriaActual = cat || 'todos';
+      categoriaActual = this.getAttribute('data-category') || 'todos';
       filtrarProductos();
     });
   });
 }
 
-// Compatibilidad por si el HTML llama a onclick="filtrarCategoria('...', this)"
-window.filtrarCategoria = function(categoria, btnElement) {
-  categoriaActual = categoria;
-  const botones = document.querySelectorAll('.filter-btn, .tab-btn, #categoryFilters button');
-  botones.forEach(b => b.classList.remove('active'));
-  if (btnElement) btnElement.classList.add('active');
-  filtrarProductos();
-};
+function configurarBuscador() {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', filtrarProductos);
+  }
+}
 
-window.filtrarProductos = filtrarProductos;
-
-// 5. Cargar vista detallada en producto.html
+// 5. Cargar Vista Detallada en producto.html (Leyendo las nuevas columnas del Excel)
 async function cargarDetalleProducto() {
   const detailTitle = document.getElementById('detailTitle');
   if (!detailTitle) return;
@@ -143,9 +148,23 @@ async function cargarDetalleProducto() {
     document.getElementById('detailImg').src = producto.imagen || '';
     document.getElementById('detailImg').alt = producto.titulo || '';
     document.getElementById('detailDescription').textContent = producto.descripcion || '';
-    document.getElementById('detailServings').textContent = producto.porciones || '';
+    
+    // Cargar especificidades dinámicas
+    if (document.getElementById('detailServings')) {
+      document.getElementById('detailServings').textContent = producto.porciones || 'Consultar';
+    }
+    if (document.getElementById('detailNotice')) {
+      document.getElementById('detailNotice').textContent = producto.anticipacion || 'Requiere anticipación previa.';
+    }
+    if (document.getElementById('detailFillings')) {
+      document.getElementById('detailFillings').textContent = producto.rellenos || 'Según catálogo';
+    }
+    if (document.getElementById('detailDelivery')) {
+      document.getElementById('detailDelivery').textContent = producto.entrega || 'Delivery o recojo en taller.';
+    }
 
-    const mensaje = `Hola quiero cotizar este producto: ${producto.titulo}`;
+    // Mensaje automático directo a WhatsApp
+    const mensaje = `Hola Ales Cakery! Vi en su catálogo web la *${producto.titulo}* (${producto.precio}) y me gustaría cotizarla.`;
     const linkWhatsApp = `https://wa.me/${TELEFONO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
 
     const btnWa = document.getElementById('btnWhatsappCTA');
@@ -156,7 +175,7 @@ async function cargarDetalleProducto() {
   }
 }
 
-// Inicialización
+// Inicializar al cargar el documento
 document.addEventListener("DOMContentLoaded", () => {
   obtenerProductosDesdeSheets();
   cargarDetalleProducto();
